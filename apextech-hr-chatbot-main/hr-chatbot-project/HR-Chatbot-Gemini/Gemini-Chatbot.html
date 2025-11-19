@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApexTech HR Chatbot - AI Powered</title>
+    
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .chatbot-header {
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-icon {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header-text p {
+            font-size: 0.875rem;
+            color: #dbeafe;
+        }
+        
+        .ai-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+        
+        .chat-container {
+            height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .messages-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user { justify-content: flex-end; }
+        .message.assistant { justify-content: flex-start; }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 20px;
+        }
+        
+        .message.assistant .message-avatar {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .message.user .message-avatar {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .message-content {
+            max-width: 600px;
+            padding: 1rem 1.25rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+        }
+        
+        .message.assistant .message-content {
+            background: white;
+            color: #1f2937;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        .message.user .message-content {
+            background: #4f46e5;
+            color: white;
+            border-bottom-right-radius: 0.25rem;
+        }
+        
+        .message-content ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .message-content li {
+            margin: 0.25rem 0;
+        }
+        
+        .loading-indicator {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .loading-dots {
+            background: white;
+            padding: 1rem 1.25rem;
+            border-radius: 1.25rem;
+            border-bottom-left-radius: 0.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .quick-questions { 
+            padding: 0 1.5rem 1rem; 
+        }
+        
+        .quick-questions-label {
+            font-size: 0.875rem;
+            color: #4b5563;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .quick-questions-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .quick-question-btn {
+            background: white;
+            color: #2563eb;
+            border: 1px solid #dbeafe;
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-question-btn:hover {
+            background: #eff6ff;
+            border-color: #2563eb;
+        }
+        
+        .quick-question-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .input-section {
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+        
+        .input-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        #userInput {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 2rem;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        
+        #userInput:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .send-button {
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            font-size: 20px;
+        }
+        
+        .send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+        }
+        
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .api-key-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .api-key-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .api-key-content h2 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+        
+        .free-highlight {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .api-key-content p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .api-key-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+        
+        .api-key-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .api-key-button:hover {
+            opacity: 0.9;
+        }
+        
+        .help-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="api-key-modal" id="apiKeyModal">
+        <div class="api-key-content">
+            <h2>🔑 Get Your FREE Gemini API Key</h2>
+            <div class="free-highlight">
+                ✅ 100% FREE - No Credit Card Required!
+            </div>
+            <p><strong>Step-by-step:</strong></p>
+            <ol style="margin-left: 1.5rem; margin-bottom: 1rem; color: #666;">
+                <li>Open: <a href="https://aistudio.google.com/" target="_blank" class="help-link">aistudio.google.com</a></li>
+                <li>Sign in with your Gmail account</li>
+                <li>Click "Get API Key" button</li>
+                <li>Copy your key (starts with AIza...)</li>
+                <li>Paste it below</li>
+            </ol>
+            <div class="error-message" id="errorMessage"></div>
+            <input 
+                type="password" 
+                class="api-key-input" 
+                id="apiKeyInput" 
+                placeholder="Paste your API key here (AIza...)"
+            >
+            <button class="api-key-button" id="startButton">
+                🚀 Start Chatting with AI
+            </button>
+            <p style="font-size: 0.75rem; color: #999; margin-top: 1rem; text-align: center;">
+                💡 Free: 1,500 messages/day · Your key is stored locally
+            </p>
+        </div>
+    </div>
+
+    <header class="chatbot-header">
+        <div class="header-content">
+            <div class="header-icon">
+                🤖
+            </div>
+            <div class="header-text">
+                <h1>
+                    ApexTech HR Assistant
+                    <span class="ai-badge">🤖 GEMINI AI</span>
+                </h1>
+                <p>Recruitment & Selection Support - Powered by Google AI</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="chat-container">
+        <div class="messages-wrapper" id="messagesWrapper"></div>
+
+        <div class="quick-questions" id="quickQuestions">
+            <p class="quick-questions-label">Quick questions:</p>
+            <div class="quick-questions-buttons" id="quickQuestionsButtons"></div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="userInput" 
+                    placeholder="Ask me anything about recruitment..."
+                    autocomplete="off"
+                >
+                <button id="sendButton" class="send-button">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const companyData = {
+            name: "ApexTech Solutions (Pvt) Ltd.",
+            industry: "Information Technology (Software Development & IT Services)",
+            size: "450 employees",
+            founded: "2010",
+            headquarters: "Sri Lanka",
+            offices: ["Colombo", "Kandy", "Galle"],
+            hrEmail: "hr@apextech.lk",
+            recruitmentEmail: "recruitment@apextech.lk",
+            careerEmail: "careers@apextech.lk",
+            phone: "011-2345678"
+        };
+
+        const knowledgeBase = [
+            {
+                question: "How can I apply for internal vacancies?",
+                answer: "You can apply through the HRIS Portal → Careers → Internal Vacancies. Select the position, upload your updated CV, and click Apply. Your manager will be notified automatically."
+            },
+            {
+                question: "Who is eligible to apply for internal vacancies?",
+                answer: "All confirmed employees who have completed six months in their current role can apply. If you are on probation, you need written approval from your manager."
+            },
+            {
+                question: "Where can I see the latest job openings?",
+                answer: "All current openings are posted on the HRIS under the Careers section. New vacancies are updated every Monday."
+            },
+            {
+                question: "What documents do I need to submit for an internal application?",
+                answer: "Please upload your updated CV, your latest performance review, and the internal transfer form signed by your manager."
+            },
+            {
+                question: "For technical roles, what additional documents are required?",
+                answer: "If you are applying for a technical or creative role, please include your GitHub link, portfolio, or sample project files."
+            },
+            {
+                question: "What are the steps in the recruitment process?",
+                answer: "The process includes: 1) Application screening, 2) HR interview, 3) Technical interview, 4) Final discussion with the department manager. The full process usually takes 2–4 weeks."
+            },
+            {
+                question: "How will I be informed about interview dates?",
+                answer: "You will receive an email and SMS notification once your interview is scheduled. You can also view the interview date in your HRIS profile under Application Status."
+            },
+            {
+                question: "Who will interview me?",
+                answer: "The HR interview is conducted by an HR Officer. The technical interview is handled by a Senior Engineer or Team Lead."
+            },
+            {
+                question: "Can I reschedule my interview?",
+                answer: "You may request to reschedule your interview only if you have a valid and genuine reason, such as a medical issue or an unavoidable personal matter. Rescheduling should be avoided unless necessary. You can request it through the 'Reschedule Interview' link in your email, preferably at least 24 hours before the interview."
+            },
+            {
+                question: "How should I prepare for my interview?",
+                answer: "Review the job description, learn about the company projects, and be ready to explain your past experience. For technical roles, expect a short test or coding task."
+            },
+            {
+                question: "What should I bring for the interview?",
+                answer: "Bring a copy of your CV, your NIC, and any relevant certificates. If the interview is virtual, check your internet connection before joining."
+            },
+            {
+                question: "How can I check my application status?",
+                answer: "Login to HRIS → My Applications. You can see your current status, interview dates, and HR notes."
+            },
+            {
+                question: "What do the status updates mean?",
+                answer: "In Review: HR is checking your application. Shortlisted: You will be called for the next step. On Hold: The position is temporarily paused. Rejected: You were not selected for this role. Selected: You will receive an offer letter soon."
+            },
+            {
+                question: "How do I refer a candidate?",
+                answer: "Go to HRIS → Employee Referral Program. Fill in the candidate's details and upload their CV."
+            },
+            {
+                question: "Do I get a reward for referring someone?",
+                answer: "Yes. If your referral gets selected and completes three months, you will receive a referral bonus based on the job level."
+            },
+            {
+                question: "How can I apply for an internship at ApexTech?",
+                answer: "Internships are available in January, May, and September. Apply through the Careers page by uploading your CV and university letter."
+            },
+            {
+                question: "What qualifications do I need for an internship?",
+                answer: "You should be an undergraduate in IT, Business, HR, or a related field. Basic computer and communication skills are expected."
+            },
+            {
+                question: "How do I accept the job offer?",
+                answer: "Open the offer email → Click Accept Offer. You will then receive the onboarding forms through the HRIS."
+            },
+            {
+                question: "What should I do after accepting the offer?",
+                answer: "Upload your NIC, bank details, and educational certificates to the HRIS. HR will then assign your first-day schedule."
+            },
+            {
+                question: "When will onboarding start?",
+                answer: "Onboarding usually starts one week after your acceptance unless HR advises a different date."
+            },
+            {
+                question: "Do you follow Sri Lankan labour laws in the recruitment process?",
+                answer: "Yes. All hiring practices follow the Shop and Office Act, the Wages Board Ordinance, and other relevant labour laws."
+            },
+            {
+                question: "Are candidates required to submit a police report by law?",
+                answer: "It is not a legal requirement, but many organizations request a police report as part of background verification."
+            },
+            {
+                question: "Can a company ask about my age during recruitment?",
+                answer: "Age can be requested only to confirm minimum legal working age. It cannot be used for discrimination based on age."
+            },
+            {
+                question: "Is discrimination during hiring illegal?",
+                answer: "Yes. Sri Lankan labour practices do not allow discrimination based on gender, ethnicity, religion, disability, or marital status."
+            },
+            {
+                question: "Are verbal job offers legally binding?",
+                answer: "A verbal offer is not considered legally binding. Only a written, signed appointment letter is valid under labour regulations."
+            },
+            {
+                question: "What is the minimum legal working age in Sri Lanka?",
+                answer: "The minimum legal working age is 16. Recruitment below that is not permitted."
+            },
+            {
+                question: "Does the company follow equal opportunity hiring?",
+                answer: "Yes. All candidates are evaluated based on qualifications and job fit only."
+            },
+            {
+                question: "What should I do if I feel uncomfortable with an interview question?",
+                answer: "You may politely decline to answer if the question is personal and not related to the job. You can also contact HR if you feel the question was inappropriate."
+            },
+            {
+                question: "Will my interview be recorded?",
+                answer: "Interviews are recorded only if required for assessment or training purposes, and candidates will be informed in advance."
+            },
+            {
+                question: "Is it mandatory to complete all interview stages?",
+                answer: "Yes. Each stage is required to ensure fairness and accuracy in selection."
+            },
+            {
+                question: "What is the probation period for new employees?",
+                answer: "Most roles have a probation period of 6 months, but this may vary depending on the job level."
+            },
+            {
+                question: "Will I receive a written appointment letter?",
+                answer: "Yes. Every selected candidate receives a formal appointment letter, which is required under Sri Lankan employment regulations."
+            },
+            {
+                question: "Can I negotiate my salary after receiving the offer?",
+                answer: "Yes, you may discuss salary before signing the appointment letter. Once signed, changes cannot be made."
+            },
+            {
+                question: "Are overtime and working hours explained during recruitment?",
+                answer: "Yes. HR will explain working hours, OT rules, and break times as per the Shop & Office Act during the interview or offer stage."
+            },
+            {
+                question: "What are the legal documents required before starting work?",
+                answer: "Typically: NIC, bank details, educational certificates, and sometimes a police report. These help HR verify identity and ensure compliance."
+            }
+        ];
+
+        const quickQuestionsList = [
+            "How can I apply for internal vacancies?",
+            "What are the recruitment process steps?",
+            "Can I reschedule my interview?",
+            "Do you follow Sri Lankan labour laws?",
+            "What is the probation period?"
+        ];
+
+        const buildSystemPrompt = () => {
+            let prompt = "You are an HR assistant chatbot for " + companyData.name + ", a " + companyData.industry + " company with " + companyData.size + " founded in " + companyData.founded + ". ";
+            prompt += "The company is headquartered in " + companyData.headquarters + " with offices in " + companyData.offices.join(", ") + ".\n\n";
+            prompt += "Your role: Help employees and candidates with Recruitment & Selection questions.\n\n";
+            prompt += "GUIDELINES:\n";
+            prompt += "- Be friendly, professional, and helpful\n";
+            prompt += "- Keep responses concise (2-3 paragraphs max)\n";
+            prompt += "- Use bullet points for lists\n";
+            prompt += "- If asked about non-recruitment topics, redirect to " + companyData.hrEmail + "\n\n";
+            prompt += "FAQ INFORMATION:\n";
+            
+            knowledgeBase.forEach((item, idx) => {
+                prompt += (idx + 1) + ". Q: " + item.question + "\n   A: " + item.answer + "\n\n";
+            });
+            
+            prompt += "Contact: " + companyData.hrEmail;
+            return prompt;
+        };
+
+        let chatHistory = [];
+        let isBusy = false;
+        let userApiKey = localStorage.getItem('gemini_api_key') || '';
+
+        const msgContainer = document.getElementById('messagesWrapper');
+        const inputField = document.getElementById('userInput');
+        const submitBtn = document.getElementById('sendButton');
+        const quickSection = document.getElementById('quickQuestions');
+        const quickBtnContainer = document.getElementById('quickQuestionsButtons');
+        const keyModal = document.getElementById('apiKeyModal');
+        const keyInputField = document.getElementById('apiKeyInput');
+        const errMsg = document.getElementById('errorMessage');
+        const startButton = document.getElementById('startButton');
+
+        function saveApiKey() {
+            const keyValue = keyInputField.value.trim();
+            
+            if (!keyValue) {
+                displayError('Please enter an API key');
+                return;
+            }
+            
+            if (!keyValue.startsWith('AIza')) {
+                displayError('Invalid API key. Should start with "AIza"');
+                return;
+            }
+            
+            userApiKey = keyValue;
+            localStorage.setItem('gemini_api_key', keyValue);
+            keyModal.style.display = 'none';
+            startChatbot();
+        }
+
+        startButton.addEventListener('click', saveApiKey);
+
+        function displayError(msg) {
+            errMsg.textContent = msg;
+            errMsg.style.display = 'block';
+            setTimeout(() => {
+                errMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function startChatbot() {
+            displayMessage('assistant', "👋 Hello! I'm the <strong>AI-powered</strong> HR Assistant for <strong>" + companyData.name + "</strong>. I use Google Gemini AI to understand your questions naturally. Ask me anything about our recruitment & selection process!");
+            setupQuickButtons();
+            
+            submitBtn.addEventListener('click', sendUserMessage);
+            inputField.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendUserMessage();
+            });
+        }
+
+        function setupQuickButtons() {
+            quickQuestionsList.forEach(q => {
+                const btn = document.createElement('button');
+                btn.className = 'quick-question-btn';
+                btn.textContent = q;
+                btn.addEventListener('click', () => {
+                    inputField.value = q;
+                    sendUserMessage();
+                });
+                quickBtnContainer.appendChild(btn);
+            });
+        }
+
+        async function sendUserMessage() {
+            const userText = inputField.value.trim();
+            if (!userText || isBusy) return;
+            
+            displayMessage('user', userText);
+            chatHistory.push({ role: 'user', content: userText });
+            inputField.value = '';
+            
+            if (chatHistory.length > 1) {
+                quickSection.style.display = 'none';
+            }
+            
+            toggleLoadingState(true);
+            await fetchAIResponse(userText);
+            toggleLoadingState(false);
+        }
+
+        async function fetchAIResponse(userQuery) {
+            try {
+                const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + userApiKey;
+                
+                const apiResponse = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: buildSystemPrompt() + "\n\nUser question: " + userQuery
+                            }]
+                        }]
+                    })
+                });
+
+                if (!apiResponse.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const result = await apiResponse.json();
+                const botReply = result.candidates[0].content.parts[0].text;
+                
+                displayMessage('assistant', botReply);
+                chatHistory.push({ role: 'assistant', content: botReply });
+                
+            } catch (err) {
+                console.error('Error:', err);
+                displayMessage('assistant', "I'm having trouble connecting to AI. Please check:\n\n• Your API key is correct\n• You have internet connection\n• You haven't exceeded daily limit (1,500 requests)\n\nFor direct help, email " + companyData.hrEmail);
+            }
+        }
+
+        function toggleLoadingState(loading) {
+            isBusy = loading;
+            inputField.disabled = loading;
+            submitBtn.disabled = loading;
+            
+            if (loading) {
+                const loaderElement = document.createElement('div');
+                loaderElement.className = 'loading-indicator';
+                loaderElement.id = 'loadingIndicator';
+                loaderElement.innerHTML = '<div class="message-avatar">🤖</div><div class="loading-dots"><div class="spinner"></div></div>';
+                
+                msgContainer.appendChild(loaderElement);
+                scrollToEnd();
+            } else {
+                const loader = document.getElementById('loadingIndicator');
+                if (loader) loader.remove();
+            }
+        }
+
+        function displayMessage(sender, text) {
+            const msgElement = document.createElement('div');
+            msgElement.className = 'message ' + sender;
+            
+            const iconType = sender === 'assistant' ? '🤖' : '👤';
+            
+            let processedText = text;
+            
+            if (sender === 'assistant') {
+                processedText = text
+                    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/^\* (.+)$/gm, '<br>• $1')
+                    .replace(/\n/g, '<br>')
+                    .replace(/^(\d+)\.\s+(.+)$/gm, '<br>$1. $2');
+            }
+            
+            if (sender === 'assistant') {
+                msgElement.innerHTML = '<div class="message-avatar">' + iconType + '</div><div class="message-content">' + processedText + '</div>';
+            } else {
+                msgElement.innerHTML = '<div class="message-content">' + processedText + '</div><div class="message-avatar">' + iconType + '</div>';
+            }
+            
+            msgContainer.appendChild(msgElement);
+            scrollToEnd();
+        }
+
+        function scrollToEnd() {
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (userApiKey) {
+                keyModal.style.display = 'none';
+                startChatbot();
+            }
+        });
+    </script>
+</body>
+</html>
