@@ -98,43 +98,10 @@
             border-radius: 50%; cursor: pointer;
             font-size: 20px;
         }
-
-        /* API key modal */
-        .api-key-modal {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 9999;
-        }
-        .api-key-content {
-            background: white; padding: 2rem;
-            border-radius: 1rem; width: 90%; max-width: 450px;
-        }
-        .error-message {
-            background: #fee; color: #c00;
-            padding: 0.75rem; border-radius: 0.5rem;
-            margin-bottom: 1rem; display: none;
-        }
     </style>
 </head>
 
 <body>
-
-<!-- API Key Modal -->
-<div class="api-key-modal" id="apiKeyModal">
-    <div class="api-key-content">
-        <h2>🔑 Get Your FREE Gemini API Key</h2>
-        <p>Paste your key here:</p>
-        <div class="error-message" id="errorMessage"></div>
-
-        <input id="apiKeyInput" type="password" placeholder="AIza..." style="width:100%; padding:10px;margin-bottom:10px">
-
-        <button id="startButton" style="width:100%; padding:10px; background:#2563eb; color:white;">
-            🚀 Start Chatting
-        </button>
-    </div>
-</div>
 
 <header class="chatbot-header">
     <div class="header-content">
@@ -165,6 +132,14 @@
 
 <script>
 
+// -------------------------------------------------------------
+//  AUTO API KEY (NO USER INPUT NEEDED)
+// -------------------------------------------------------------
+let userApiKey = "YOUR_API_KEY_HERE"; // <<< PUT YOUR GEMINI API KEY HERE
+localStorage.setItem("gemini_api_key", userApiKey);
+
+// -------------------------------------------------------------
+
 const companyData = {
     name: "ApexTech Solutions (Pvt) Ltd.",
     industry: "Information Technology",
@@ -186,35 +161,9 @@ const quickQuestionsList = [
     "Can I reschedule my interview?"
 ];
 
-let userApiKey = localStorage.getItem("gemini_api_key") || "";
-let chatHistory = [];
-
-const apiKeyModal = document.getElementById("apiKeyModal");
-const keyInput = document.getElementById("apiKeyInput");
-const errorMessage = document.getElementById("errorMessage");
-const startBtn = document.getElementById("startButton");
-
 const msgWrapper = document.getElementById("messagesWrapper");
 const inputField = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendButton");
-
-
-// Save API key
-startBtn.onclick = () => {
-    let key = keyInput.value.trim();
-    if (!key.startsWith("AIza")) {
-        errorMessage.style.display = "block";
-        errorMessage.innerText = "Invalid API Key!";
-        return;
-    }
-    localStorage.setItem("gemini_api_key", key);
-    userApiKey = key;
-    apiKeyModal.style.display = "none";
-    welcomeMessage();
-};
-
-// Load existing key
-if (userApiKey) apiKeyModal.style.display = "none";
 
 
 // Welcome message
@@ -225,8 +174,10 @@ function welcomeMessage() {
     renderQuickButtons();
 }
 
+welcomeMessage();
 
-// Render Quick Questions
+
+// Quick buttons
 function renderQuickButtons() {
     const container = document.getElementById("quickQuestionsButtons");
     container.innerHTML = "";
@@ -243,7 +194,7 @@ function renderQuickButtons() {
 }
 
 
-// Add message to chat
+// Add chat message
 function addMessage(role, text) {
     const msgDiv = document.createElement("div");
     msgDiv.className = `message ${role}`;
@@ -258,14 +209,14 @@ function addMessage(role, text) {
 }
 
 
-// Send button action
+// Send click
 sendBtn.onclick = sendMessage;
 inputField.addEventListener("keypress", e => {
     if (e.key === "Enter") sendMessage();
 });
 
 
-// MAIN SEND FUNCTION
+// Main send function
 async function sendMessage() {
     const userText = inputField.value.trim();
     if (!userText) return;
@@ -299,7 +250,8 @@ async function sendMessage() {
         const data = await response.json();
         loadingDiv.remove();
 
-        const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
+        const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                         "Sorry, I couldn't understand.";
 
         addMessage("assistant", botReply);
 
@@ -310,7 +262,7 @@ async function sendMessage() {
 }
 
 
-// Build system prompt
+// System prompt
 function buildSystemPrompt() {
     let text = `You are an HR assistant for ${companyData.name}.`;
     text += "\nFAQs:\n";
@@ -319,10 +271,6 @@ function buildSystemPrompt() {
     });
     return text;
 }
-
-
-// Start if key exists
-if (userApiKey) welcomeMessage();
 
 </script>
 
