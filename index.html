@@ -132,13 +132,16 @@
 
 <script>
 
-// -------------------------------------------------------------
-//  AUTO API KEY (NO USER INPUT NEEDED)
-// -------------------------------------------------------------
-let userApiKey = "YOUR_API_KEY_HERE"; // <<< PUT YOUR GEMINI API KEY HERE
+// ⭐ AUTO API KEY (REPLACE THIS WITH YOUR KEY)
+let userApiKey = "AIzaSyAuL7VnBKgfeG-tYqCArlS3HHfwUXrNRho";
 localStorage.setItem("gemini_api_key", userApiKey);
 
-// -------------------------------------------------------------
+// REMOVE any modal if exists from old version
+if (document.getElementById("apiKeyModal")) {
+    document.getElementById("apiKeyModal").remove();
+}
+
+// ---------------------- YOUR CHATBOT LOGIC --------------------------
 
 const companyData = {
     name: "ApexTech Solutions (Pvt) Ltd.",
@@ -165,7 +168,6 @@ const msgWrapper = document.getElementById("messagesWrapper");
 const inputField = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendButton");
 
-
 // Welcome message
 function welcomeMessage() {
     addMessage("assistant", 
@@ -173,11 +175,9 @@ function welcomeMessage() {
     );
     renderQuickButtons();
 }
-
 welcomeMessage();
 
-
-// Quick buttons
+// Render Quick Questions
 function renderQuickButtons() {
     const container = document.getElementById("quickQuestionsButtons");
     container.innerHTML = "";
@@ -193,8 +193,7 @@ function renderQuickButtons() {
     });
 }
 
-
-// Add chat message
+// Add message to chat
 function addMessage(role, text) {
     const msgDiv = document.createElement("div");
     msgDiv.className = `message ${role}`;
@@ -208,15 +207,13 @@ function addMessage(role, text) {
     msgWrapper.scrollTop = msgWrapper.scrollHeight;
 }
 
-
-// Send click
+// Send button action
 sendBtn.onclick = sendMessage;
 inputField.addEventListener("keypress", e => {
     if (e.key === "Enter") sendMessage();
 });
 
-
-// Main send function
+// MAIN SEND FUNCTION
 async function sendMessage() {
     const userText = inputField.value.trim();
     if (!userText) return;
@@ -250,9 +247,7 @@ async function sendMessage() {
         const data = await response.json();
         loadingDiv.remove();
 
-        const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-                         "Sorry, I couldn't understand.";
-
+        const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
         addMessage("assistant", botReply);
 
     } catch (err) {
@@ -261,8 +256,7 @@ async function sendMessage() {
     }
 }
 
-
-// System prompt
+// Build system prompt
 function buildSystemPrompt() {
     let text = `You are an HR assistant for ${companyData.name}.`;
     text += "\nFAQs:\n";
