@@ -1,272 +1,473 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ApexTech HR Chatbot - AI Powered</title>
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-            height: 100vh;
-            overflow: hidden;
-        }
-        .chatbot-header {
-            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-            color: white;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header-content {
-            max-width: 1200px; margin: 0 auto;
-            display: flex; align-items: center; gap: 1rem;
-        }
-        .header-icon {
-            background: rgba(255,255,255,0.2);
-            padding: 0.75rem;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-        }
-        .header-text h1 { font-size: 1.5rem; font-weight: 700; }
-        .ai-badge {
-            background: #10b981; color: white;
-            padding: 0.25rem 0.75rem; border-radius: 1rem;
-            font-size: 0.75rem; font-weight: bold;
-        }
-        .chat-container {
-            height: calc(100vh - 100px);
-            display: flex; flex-direction: column;
-            max-width: 1200px; margin: 0 auto;
-        }
-        .messages-wrapper {
-            flex: 1; overflow-y: auto;
-            padding: 1.5rem;
-            display: flex; flex-direction: column; gap: 1rem;
-        }
-        .message { display: flex; gap: 0.75rem; }
-        .message.user { justify-content: flex-end; }
-        .message.assistant { justify-content: flex-start; }
-        .message-avatar {
-            width: 40px; height: 40px;
-            border-radius: 50%; display: flex;
-            align-items: center; justify-content: center;
-            font-size: 20px;
-        }
-        .assistant .message-avatar { background: #2563eb; color: white; }
-        .user .message-avatar { background: #4f46e5; color: white; }
-        .message-content {
-            max-width: 600px;
-            padding: 1rem 1.25rem; border-radius: 1.25rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .assistant .message-content {
-            background: white; color: #1f2937;
-            border-bottom-left-radius: 0.25rem;
-        }
-        .user .message-content {
-            background: #4f46e5; color: white;
-            border-bottom-right-radius: 0.25rem;
-        }
-        .loading-indicator { display: flex; gap: 1rem; align-items: center; }
-        .spinner {
-            width: 22px; height: 22px; border-radius: 50%;
-            border: 3px solid #ddd; border-top-color: #2563eb;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .quick-questions { padding: 0 1.5rem 1rem; }
-        .quick-question-btn {
-            background: white; color: #2563eb;
-            border: 1px solid #dbeafe;
-            padding: 0.5rem 1rem; border-radius: 1.5rem;
-            cursor: pointer;
-        }
-        .input-section {
-            background: white; border-top: 1px solid #eee;
-            padding: 1.5rem;
-        }
-        #userInput {
-            flex: 1; padding: 1rem 1.25rem;
-            border: 1px solid #ccc; border-radius: 2rem;
-        }
-        .send-button {
-            background: linear-gradient(135deg,#2563eb,#4f46e5);
-            color: white; border: none; width: 50px; height: 50px;
-            border-radius: 50%; cursor: pointer;
-            font-size: 20px;
-        }
-    </style>
-</head>
 
+```
+<style>
+    * { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: border-box; 
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    .chatbot-header {
+        background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+        color: white;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .header-icon {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.75rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+    
+    .header-text h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    
+    .header-text p {
+        font-size: 0.875rem;
+        color: #dbeafe;
+    }
+    
+    .ai-badge {
+        background: #10b981;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
+    }
+    
+    .chat-container {
+        height: calc(100vh - 100px);
+        display: flex;
+        flex-direction: column;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .messages-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .message {
+        display: flex;
+        gap: 0.75rem;
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message.user { justify-content: flex-end; }
+    .message.assistant { justify-content: flex-start; }
+    
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 20px;
+    }
+    
+    .message.assistant .message-avatar {
+        background: #2563eb;
+        color: white;
+    }
+    
+    .message.user .message-avatar {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    .message-content {
+        max-width: 600px;
+        padding: 1rem 1.25rem;
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        line-height: 1.6;
+    }
+    
+    .message.assistant .message-content {
+        background: white;
+        color: #1f2937;
+        border-bottom-left-radius: 0.25rem;
+    }
+    
+    .message.user .message-content {
+        background: #4f46e5;
+        color: white;
+        border-bottom-right-radius: 0.25rem;
+    }
+    
+    .message-content ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+    
+    .message-content li {
+        margin: 0.25rem 0;
+    }
+    
+    .loading-indicator {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    .loading-dots {
+        background: white;
+        padding: 1rem 1.25rem;
+        border-radius: 1.25rem;
+        border-bottom-left-radius: 0.25rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #e5e7eb;
+        border-top-color: #2563eb;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .quick-questions { 
+        padding: 0 1.5rem 1rem; 
+    }
+    
+    .quick-questions-label {
+        font-size: 0.875rem;
+        color: #4b5563;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    
+    .quick-questions-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .quick-question-btn {
+        background: white;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        padding: 0.5rem 1rem;
+        border-radius: 1.5rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .quick-question-btn:hover {
+        background: #eff6ff;
+        border-color: #2563eb;
+    }
+    
+    .quick-question-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .input-section {
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        padding: 1.5rem;
+    }
+    
+    .input-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    #userInput {
+        flex: 1;
+        padding: 1rem 1.25rem;
+        border: 1px solid #d1d5db;
+        border-radius: 2rem;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    
+    #userInput:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .send-button {
+        background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+        color: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+        font-size: 20px;
+    }
+    
+    .send-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+    }
+    
+    .send-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+```
+
+</head>
 <body>
 
+```
 <header class="chatbot-header">
     <div class="header-content">
-        <div class="header-icon">🤖</div>
+        <div class="header-icon">
+            🤖
+        </div>
         <div class="header-text">
-            <h1>ApexTech HR Assistant <span class="ai-badge">GEMINI</span></h1>
-            <p>Recruitment & Selection Support</p>
+            <h1>
+                ApexTech HR Assistant
+                <span class="ai-badge">🤖 GEMINI AI</span>
+            </h1>
+            <p>Recruitment & Selection Support - Powered by Google AI</p>
         </div>
     </div>
 </header>
 
 <div class="chat-container">
-
     <div class="messages-wrapper" id="messagesWrapper"></div>
 
-    <div class="quick-questions">
-        <div id="quickQuestionsButtons"></div>
+    <div class="quick-questions" id="quickQuestions">
+        <p class="quick-questions-label">Quick questions:</p>
+        <div class="quick-questions-buttons" id="quickQuestionsButtons"></div>
     </div>
 
     <div class="input-section">
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="userInput" placeholder="Ask me anything...">
-            <button id="sendButton" class="send-button">➤</button>
+        <div class="input-wrapper">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ask me anything about recruitment..."
+                autocomplete="off"
+            >
+            <button id="sendButton" class="send-button">
+                ➤
+            </button>
         </div>
     </div>
 </div>
 
-
 <script>
+    const companyData = {
+        name: "ApexTech Solutions (Pvt) Ltd.",
+        industry: "Information Technology (Software Development & IT Services)",
+        size: "450 employees",
+        founded: "2010",
+        headquarters: "Sri Lanka",
+        offices: ["Colombo", "Kandy", "Galle"],
+        hrEmail: "hr@apextech.lk",
+    };
 
-// ⭐ AUTO API KEY (REPLACE THIS WITH YOUR KEY)
-let userApiKey = "AIzaSyAuL7VnBKgfeG-tYqCArlS3HHfwUXrNRho";
-localStorage.setItem("gemini_api_key", userApiKey);
+    const knowledgeBase = [ /* same as your original knowledgeBase */ ];
+    const quickQuestionsList = [ "How can I apply for internal vacancies?", "What are the recruitment process steps?", "Can I reschedule my interview?", "Do you follow Sri Lankan labour laws?", "What is the probation period?" ];
 
-// REMOVE any modal if exists from old version
-if (document.getElementById("apiKeyModal")) {
-    document.getElementById("apiKeyModal").remove();
-}
+    const buildSystemPrompt = () => {
+        let prompt = "You are an HR assistant chatbot for " + companyData.name + ", a " + companyData.industry + " company with " + companyData.size + " founded in " + companyData.founded + ". ";
+        prompt += "The company is headquartered in " + companyData.headquarters + " with offices in " + companyData.offices.join(", ") + ".\n\n";
+        prompt += "Your role: Help employees and candidates with Recruitment & Selection questions.\n\n";
+        prompt += "GUIDELINES:\n";
+        prompt += "- Be friendly, professional, and helpful\n";
+        prompt += "- Keep responses concise (2-3 paragraphs max)\n";
+        prompt += "- Use bullet points for lists\n";
+        prompt += "- If asked about non-recruitment topics, redirect to " + companyData.hrEmail + "\n\n";
+        prompt += "FAQ INFORMATION:\n";
+        
+        knowledgeBase.forEach((item, idx) => {
+            prompt += (idx + 1) + ". Q: " + item.question + "\n   A: " + item.answer + "\n\n";
+        });
+        
+        prompt += "Contact: " + companyData.hrEmail;
+        return prompt;
+    };
 
-// ---------------------- YOUR CHATBOT LOGIC --------------------------
+    let chatHistory = [];
+    let isBusy = false;
+    const userApiKey = "AIzaSyAuL7VnBKgfeG-tYqCArlS3HHfwUXrNRho"; // <-- Manually insert API key here
 
-const companyData = {
-    name: "ApexTech Solutions (Pvt) Ltd.",
-    industry: "Information Technology",
-    size: "450 employees",
-    founded: "2010",
-    headquarters: "Sri Lanka"
-};
+    const msgContainer = document.getElementById('messagesWrapper');
+    const inputField = document.getElementById('userInput');
+    const submitBtn = document.getElementById('sendButton');
+    const quickBtnContainer = document.getElementById('quickQuestionsButtons');
 
-const knowledgeBase = [
-    { question: "How can I apply for internal vacancies?",
-      answer: "You can apply through the HRIS Portal → Careers → Internal Vacancies." },
-    { question: "What are the steps in the recruitment process?",
-      answer: "1) Screening 2) HR interview 3) Technical interview 4) Final discussion." }
-];
-
-const quickQuestionsList = [
-    "How can I apply for internal vacancies?",
-    "What are the recruitment process steps?",
-    "Can I reschedule my interview?"
-];
-
-const msgWrapper = document.getElementById("messagesWrapper");
-const inputField = document.getElementById("userInput");
-const sendBtn = document.getElementById("sendButton");
-
-// Welcome message
-function welcomeMessage() {
-    addMessage("assistant", 
-        "👋 Hello! I'm the AI-powered HR Assistant. Ask me anything about recruitment!"
-    );
-    renderQuickButtons();
-}
-welcomeMessage();
-
-// Render Quick Questions
-function renderQuickButtons() {
-    const container = document.getElementById("quickQuestionsButtons");
-    container.innerHTML = "";
-    quickQuestionsList.forEach(q => {
-        const btn = document.createElement("button");
-        btn.className = "quick-question-btn";
-        btn.innerText = q;
-        btn.onclick = () => {
-            inputField.value = q;
-            sendMessage();
-        };
-        container.appendChild(btn);
-    });
-}
-
-// Add message to chat
-function addMessage(role, text) {
-    const msgDiv = document.createElement("div");
-    msgDiv.className = `message ${role}`;
-
-    msgDiv.innerHTML = `
-        <div class="message-avatar">${role === "assistant" ? "🤖" : "🧑"}</div>
-        <div class="message-content">${text}</div>
-    `;
-
-    msgWrapper.appendChild(msgDiv);
-    msgWrapper.scrollTop = msgWrapper.scrollHeight;
-}
-
-// Send button action
-sendBtn.onclick = sendMessage;
-inputField.addEventListener("keypress", e => {
-    if (e.key === "Enter") sendMessage();
-});
-
-// MAIN SEND FUNCTION
-async function sendMessage() {
-    const userText = inputField.value.trim();
-    if (!userText) return;
-
-    addMessage("user", userText);
-    inputField.value = "";
-
-    const loadingDiv = document.createElement("div");
-    loadingDiv.className = "loading-indicator";
-    loadingDiv.innerHTML = `<div class="spinner"></div>`;
-    msgWrapper.appendChild(loadingDiv);
-    msgWrapper.scrollTop = msgWrapper.scrollHeight;
-
-    const systemPrompt = buildSystemPrompt();
-
-    try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${userApiKey}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [
-                        { role: "system", parts: [{ text: systemPrompt }] },
-                        { role: "user", parts: [{ text: userText }] }
-                    ]
-                })
-            }
-        );
-
-        const data = await response.json();
-        loadingDiv.remove();
-
-        const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
-        addMessage("assistant", botReply);
-
-    } catch (err) {
-        loadingDiv.remove();
-        addMessage("assistant", "⚠️ Error connecting to Gemini API.");
+    function startChatbot() {
+        displayMessage('assistant', "👋 Hello! I'm the <strong>AI-powered</strong> HR Assistant for <strong>" + companyData.name + "</strong>. Ask me anything about our recruitment & selection process!");
+        setupQuickButtons();
+        
+        submitBtn.addEventListener('click', sendUserMessage);
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendUserMessage();
+        });
     }
-}
 
-// Build system prompt
-function buildSystemPrompt() {
-    let text = `You are an HR assistant for ${companyData.name}.`;
-    text += "\nFAQs:\n";
-    knowledgeBase.forEach(k => {
-        text += `Q: ${k.question}\nA: ${k.answer}\n`;
+    function setupQuickButtons() {
+        quickQuestionsList.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-question-btn';
+            btn.textContent = q;
+            btn.addEventListener('click', () => {
+                inputField.value = q;
+                sendUserMessage();
+            });
+            quickBtnContainer.appendChild(btn);
+        });
+    }
+
+    async function sendUserMessage() {
+        const userText = inputField.value.trim();
+        if (!userText || isBusy) return;
+        
+        displayMessage('user', userText);
+        chatHistory.push({ role: 'user', content: userText });
+        inputField.value = '';
+        
+        toggleLoadingState(true);
+        await fetchAIResponse(userText);
+        toggleLoadingState(false);
+    }
+
+    async function fetchAIResponse(userQuery) {
+        try {
+            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + userApiKey;
+            
+            const apiResponse = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: buildSystemPrompt() + "\n\nUser question: " + userQuery
+                        }]
+                    }]
+                })
+            });
+
+            if (!apiResponse.ok) throw new Error('API request failed');
+
+            const result = await apiResponse.json();
+            const botReply = result.candidates[0].content.parts[0].text;
+            
+            displayMessage('assistant', botReply);
+            chatHistory.push({ role: 'assistant', content: botReply });
+            
+        } catch (err) {
+            console.error('Error:', err);
+            displayMessage('assistant', "I'm having trouble connecting to AI. Please check your API key and internet connection. For help, email " + companyData.hrEmail);
+        }
+    }
+
+    function toggleLoadingState(loading) {
+        isBusy = loading;
+        inputField.disabled = loading;
+        submitBtn.disabled = loading;
+        
+        if (loading) {
+            const loaderElement = document.createElement('div');
+            loaderElement.className = 'loading-indicator';
+            loaderElement.id = 'loadingIndicator';
+            loaderElement.innerHTML = '<div class="message-avatar">🤖</div><div class="loading-dots"><div class="spinner"></div></div>';
+            msgContainer.appendChild(loaderElement);
+            scrollToEnd();
+        } else {
+            const loader = document.getElementById('loadingIndicator');
+            if (loader) loader.remove();
+        }
+    }
+
+    function displayMessage(sender, text) {
+        const msgElement = document.createElement('div');
+        msgElement.className = 'message ' + sender;
+        const iconType = sender === 'assistant' ? '🤖' : '👤';
+        let processedText = text;
+        
+        if (sender === 'assistant') {
+            processedText = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        }
+        
+        if (sender === 'assistant') {
+            msgElement.innerHTML = '<div class="message-avatar">' + iconType + '</div><div class="message-content">' + processedText + '</div>';
+        } else {
+            msgElement.innerHTML = '<div class="message-content">' + processedText + '</div><div class="message-avatar">' + iconType + '</div>';
+        }
+        
+        msgContainer.appendChild(msgElement);
+        scrollToEnd();
+    }
+
+    function scrollToEnd() {
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        startChatbot();
     });
-    return text;
-}
-
 </script>
+```
 
 </body>
 </html>
